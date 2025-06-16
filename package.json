@@ -1,19 +1,21 @@
 {
   "name": "doodle",
-  "version": "0.0.0",
-  "private": true,
+  "module": "index.ts",
   "type": "module",
+  "private": true,
+
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "vue": "^3.5.13"
-  },
+
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.3",
-    "vite": "^6.2.4",
-    "vite-plugin-vue-devtools": "^7.7.2"
+    "@types/bun": "latest",
+    "vite": "^7.0.0-beta.1"
+  },
+
+  "peerDependencies": {
+    "typescript": "^5"
   }
 }
