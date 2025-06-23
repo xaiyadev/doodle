@@ -32,6 +32,8 @@
               modules = [
                 {
                   languages = {
+                    typescript.enable = true;
+
                     javascript = {
                       enable = true;
 
