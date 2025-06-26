@@ -1,73 +1,85 @@
-enum State {
-    CLOSED = 0,
-    OPEN = 1,
-    OPTIONS = 2,
+export enum MenuState {
+    OPEN,
+    OPTIONS,
+    CLOSED,
 }
 
-export default class {
+export default class MenuController {
 
-    el: HTMLDivElement;
-    state: State;
+    private readonly _el: HTMLElement;
+    private _state: MenuState;
 
     constructor(
-        state: State = State.OPEN,
-        el:HTMLDivElement = document.createElement('div'),
+        el:HTMLElement = document.createElement('div'),
+        state: MenuState = MenuState.CLOSED,
     ) {
-        this.el = el;
-        this.state = state;
-
+        this._el = el;
+        this._state = state;
     }
 
-    _registerEvents() {
-        document.querySelector('#app > #menu > #start')
-            ?.addEventListener('click', this._onStartButton.bind(this))
+    open() {
+        if (document.querySelector('#menu')) throw Error('There is already a menu open!');
 
-        document.querySelector('#app > #menu > #options')
-            ?.addEventListener('click', this._onOptionButton.bind(this))
-
-        document.querySelector('#app > #menu > #quit')
-            ?.addEventListener('click', this._onQuitButton.bind(this))
-
-    }
-
-
-    openMenu(initial = false) {
-        this.el.id = "menu";
-
-        this.el.innerHTML = `
+        this._el.id = "menu";
+        this._el.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
+        this._el.innerHTML = `
             <button class="buttons" id="start">Start</button>
             <button class="buttons" id="options">Options</button>
+            <button class="buttons" id="close">close</button>
         `;
 
-        if (initial) {
-            this.el.innerHTML += `
-                <button class="buttons" id="quit">Quit</button>
-            `;
-        }
-
         /* Append Document to the app */
-        document.querySelector('#app')?.append(this.el)
-
-        this.state = State.OPEN;
+        document.querySelector('#app')?.before(this._el);
         this._registerEvents();
+        this._state = MenuState.OPEN;
     }
 
     closeMenu() {
-        this.state = State.CLOSED;
-        this.el.remove();
+        this._state = MenuState.CLOSED;
+        this._el.remove();
+    }
+
+    _registerEvents() {
+        this.startButton.addEventListener('click', this._onStartButton.bind(this));
+        this.optionsButton.addEventListener('click', this._onOptionButton.bind(this))
+        this.closeButton.addEventListener('click', this._onCloseButton.bind(this))
     }
 
     _onStartButton() {
-        alert('Starting!');
+        window.dispatchEvent(new Event('menuStart'));
+
         this.closeMenu();
     }
 
     _onOptionButton() {
         alert('Options!');
+        this._state = MenuState.OPTIONS;
     }
 
-    _onQuitButton() {
-        window.close();
+    _onCloseButton() {
+        this._state = MenuState.CLOSED;
+        this.closeMenu();
     }
 
+    get state(): MenuState {
+        return this._state;
+    }
+
+    get startButton() {
+        const start: Element|null = this._el.querySelector('#start');
+        if (!start) throw Error('Start button not found in Menu!')
+        return start;
+    }
+
+    get optionsButton() {
+        const options: Element|null = this._el.querySelector('#options');
+        if (!options) throw Error('Options button not found in Menu!');
+        return options;
+    }
+
+    get closeButton() {
+        const close: Element|null = this._el.querySelector('#close');
+        if (!close) throw Error('Close button not found in Menu!');
+        return close;
+    }
 }
